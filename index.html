@@ -21,9 +21,17 @@
             padding: 3rem;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            min-width: 300px;
         }
         h1 { color: #ff4d6d; margin-bottom: 2rem; }
-        .btn-container { display: flex; justify-content: center; gap: 20px; }
+        .btn-container { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            gap: 20px; 
+            height: 50px; /* Keeps space for buttons */
+            position: relative;
+        }
         button {
             padding: 12px 25px;
             font-size: 1.2rem;
@@ -32,13 +40,13 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        #yesBtn { background-color: #ff4d6d; color: white; }
+        #yesBtn { background-color: #ff4d6d; color: white; z-index: 1; }
         #noBtn {
             background-color: #adb5bd;
             color: white;
-            position: absolute; /* Allows it to teleport */
+            position: relative; /* Starts next to Yes button */
+            z-index: 2;
         }
-        .success-msg { display: none; }
     </style>
 </head>
 <body>
@@ -54,22 +62,22 @@
     <script>
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        const card = document.getElementById('mainCard');
 
-        // The "Dodging" Logic
         noBtn.addEventListener('mouseover', () => {
+            // Switch to absolute only when hovered so it can teleport
+            noBtn.style.position = 'absolute';
+            
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
 
-            // Make the 'Yes' button grow slightly to "encourage" clicking it
+            // Make the 'Yes' button grow
             let currentScale = yesBtn.style.transform.replace('scale(', '').replace(')', '') || 1;
-            yesBtn.style.transform = `scale(${parseFloat(currentScale) + 0.1})`;
+            yesBtn.style.transform = `scale(${parseFloat(currentScale) + 0.15})`;
         });
 
-        // The "Success" Logic with Matcha Icon
         yesBtn.addEventListener('click', () => {
             document.getElementById('mainCard').innerHTML = `
                 <h1 style="font-size: 3rem;">YAY! 🥰</h1>
