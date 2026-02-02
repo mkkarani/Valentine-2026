@@ -21,16 +21,14 @@
             padding: 3rem;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            min-width: 300px;
+            min-width: 320px;
         }
         h1 { color: #ff4d6d; margin-bottom: 2rem; }
         .btn-container { 
             display: flex; 
             justify-content: center; 
             align-items: center;
-            gap: 20px; 
-            height: 50px; /* Keeps space for buttons */
-            position: relative;
+            gap: 20px;
         }
         button {
             padding: 12px 25px;
@@ -40,12 +38,12 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        #yesBtn { background-color: #ff4d6d; color: white; z-index: 1; }
+        #yesBtn { background-color: #ff4d6d; color: white; }
         #noBtn {
             background-color: #adb5bd;
             color: white;
-            position: relative; /* Starts next to Yes button */
-            z-index: 2;
+            /* Starts naturally next to Yes button */
+            position: relative; 
         }
     </style>
 </head>
@@ -63,10 +61,12 @@
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
 
-        noBtn.addEventListener('mouseover', () => {
-            // Switch to absolute only when hovered so it can teleport
-            noBtn.style.position = 'absolute';
+        const moveButton = () => {
+            // Switch to fixed so it teleports relative to the browser window, 
+            // not the card/container. This stops it from overlapping 'Yes'.
+            noBtn.style.position = 'fixed';
             
+            // Calculate random position
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             
@@ -76,15 +76,16 @@
             // Make the 'Yes' button grow
             let currentScale = yesBtn.style.transform.replace('scale(', '').replace(')', '') || 1;
             yesBtn.style.transform = `scale(${parseFloat(currentScale) + 0.15})`;
-        });
+        };
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('click', moveButton); // In case they are fast on mobile
 
         yesBtn.addEventListener('click', () => {
             document.getElementById('mainCard').innerHTML = `
                 <h1 style="font-size: 3rem;">YAY! 🥰</h1>
                 <p style="font-size: 1.2rem;">I knew you'd say yes!</p>
-                <div style="font-size: 80px; margin: 20px 0;">🍵</div>
-                <div style="font-size: 20px; color: #6b8e23; font-weight: bold;">Matcha Date Soon?</div>
-                <div style="font-size: 40px; margin-top: 15px;">❤️✨🎉</div>
+                <div style="font-size: 50px; margin-top: 15px;">❤️✨🎉</div>
             `;
         });
     </script>
