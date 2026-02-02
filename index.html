@@ -22,14 +22,10 @@
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             min-width: 320px;
+            z-index: 10;
         }
         h1 { color: #ff4d6d; margin-bottom: 2rem; }
-        .btn-container { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            gap: 20px;
-        }
+        .btn-container { display: flex; justify-content: center; align-items: center; gap: 20px; }
         button {
             padding: 12px 25px;
             font-size: 1.2rem;
@@ -39,15 +35,31 @@
             transition: transform 0.2s;
         }
         #yesBtn { background-color: #ff4d6d; color: white; }
-        #noBtn {
-            background-color: #adb5bd;
-            color: white;
-            /* Starts naturally next to Yes button */
-            position: relative; 
+        #noBtn { background-color: #adb5bd; color: white; position: relative; }
+
+        /* Falling Hearts Animation */
+        .heart {
+            position: fixed;
+            top: -10%;
+            color: #ff4d6d;
+            font-size: 20px;
+            user-select: none;
+            z-index: 1;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
         }
     </style>
 </head>
 <body>
+
+    <audio id="backgroundMusic" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="card" id="mainCard">
         <h1 id="question">Will you be my Valentine?</h1>
@@ -60,34 +72,48 @@
     <script>
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
+        const music = document.getElementById('backgroundMusic');
 
+        // Dodging logic
         const moveButton = () => {
-            // Switch to fixed so it teleports relative to the browser window, 
-            // not the card/container. This stops it from overlapping 'Yes'.
             noBtn.style.position = 'fixed';
-            
-            // Calculate random position
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-            
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
-
-            // Make the 'Yes' button grow
+            
             let currentScale = yesBtn.style.transform.replace('scale(', '').replace(')', '') || 1;
             yesBtn.style.transform = `scale(${parseFloat(currentScale) + 0.15})`;
         };
 
         noBtn.addEventListener('mouseover', moveButton);
-        noBtn.addEventListener('click', moveButton); // In case they are fast on mobile
+        noBtn.addEventListener('click', moveButton);
 
+        // Success logic
         yesBtn.addEventListener('click', () => {
+            music.play().catch(e => console.log("Audio play failed", e));
+            
             document.getElementById('mainCard').innerHTML = `
                 <h1 style="font-size: 3rem;">YAY! 🥰</h1>
-                <p style="font-size: 1.2rem;">I knew you'd say yes!</p>
-                <div style="font-size: 50px; margin-top: 15px;">❤️✨🎉</div>
+                <p>I knew you'd say yes!</p>
+                <div style="font-size: 50px;">❤️✨🎉</div>
             `;
+
+            // Start falling hearts
+            setInterval(createHeart, 300);
         });
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+            heart.style.opacity = Math.random();
+            document.body.appendChild(heart);
+            
+            setTimeout(() => { heart.remove(); }, 5000);
+        }
     </script>
 </body>
 </html>
